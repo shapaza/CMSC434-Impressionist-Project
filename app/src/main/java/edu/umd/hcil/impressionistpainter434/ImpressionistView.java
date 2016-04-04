@@ -7,7 +7,9 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -24,10 +27,10 @@ import java.util.Random;
 public class ImpressionistView extends View {
 
     private ImageView _imageView;
-
     private Canvas _offScreenCanvas = null;
     private Bitmap _offScreenBitmap = null;
     private Paint _paint = new Paint();
+    private Bitmap _imageViewBitmap;
 
     private int _alpha = 150;
     private int _defaultRadius = 25;
@@ -37,6 +40,8 @@ public class ImpressionistView extends View {
     private Paint _paintBorder = new Paint();
     private BrushType _brushType = BrushType.Square;
     private float _minBrushRadius = 5;
+
+    private ArrayList<PaintPoint> _listPaintPoints = new ArrayList<PaintPoint>();
 
     public ImpressionistView(Context context) {
         super(context);
@@ -76,7 +81,6 @@ public class ImpressionistView extends View {
         _paintBorder.setStrokeWidth(3);
         _paintBorder.setStyle(Paint.Style.STROKE);
         _paintBorder.setAlpha(50);
-
         //_paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
     }
 
@@ -97,6 +101,7 @@ public class ImpressionistView extends View {
      */
     public void setImageView(ImageView imageView){
         _imageView = imageView;
+        _imageViewBitmap = _imageView.getDrawingCache();
     }
 
     /**
@@ -111,7 +116,16 @@ public class ImpressionistView extends View {
      * Clears the painting
      */
     public void clearPainting(){
+        _listPaintPoints.clear();
+
         //TODO
+        if(_offScreenCanvas != null) {
+            Paint paint = new Paint();
+            paint.setColor(Color.WHITE);
+            paint.setStyle(Paint.Style.FILL);
+            _offScreenCanvas.drawRect(0, 0, this.getWidth(), this.getHeight(), paint);
+            invalidate();
+        }
     }
 
     @Override
@@ -124,6 +138,19 @@ public class ImpressionistView extends View {
 
         // Draw the border. Helpful to see the size of the bitmap in the ImageView
         canvas.drawRect(getBitmapPositionInsideImageView(_imageView), _paintBorder);
+
+        _imageViewBitmap = _imageView.getDrawingCache();
+
+        for (PaintPoint p : _listPaintPoints) {
+            float touchX = p.getX();
+            float touchY = p.getY();
+            Paint pointPaint = p.getPaint();
+
+            if (p.getBrushType() == BrushType.Square)
+                canvas.drawRect(touchX, touchY, touchX + p.getBrushRadius(), touchY + p.getBrushRadius(), pointPaint);
+            if (p.getBrushType() == BrushType.Circle)
+                canvas.drawCircle(touchX, touchY, p.getBrushRadius(), pointPaint);
+        }
     }
 
     @Override
@@ -133,8 +160,50 @@ public class ImpressionistView extends View {
         //Basically, the way this works is to liste for Touch Down and Touch Move events and determine where those
         //touch locations correspond to the bitmap in the ImageView. You can then grab info about the bitmap--like the pixel color--
         //at that location
+        float curTouchX = motionEvent.getX();
+        float curTouchY = motionEvent.getY();
+        int curTouchXRounded = (int) curTouchX;
+        int curTouchYRounded = (int) curTouchY;
+        float brushRadius = _defaultRadius;
+        //Bitmap _imageViewBitmap = _imageView.getDrawingCache();
 
+        if (curTouchXRounded < 0)
+            curTouchXRounded = 0;
+        if (curTouchYRounded < 0)
+            curTouchYRounded = 0;
 
+        if (curTouchXRounded >= _imageViewBitmap.getWidth())
+            curTouchXRounded = _imageViewBitmap.getWidth() - 1;
+        if (curTouchYRounded >= _imageViewBitmap.getHeight())
+            curTouchYRounded = _imageViewBitmap.getHeight() - 1;
+
+        int pixel = _imageViewBitmap.getPixel(curTouchXRounded, curTouchYRounded);
+
+        switch(motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE:
+                int historySize = motionEvent.getHistorySize();
+                _paint.setColor(pixel);
+                _paint.setStrokeWidth(brushRadius);
+
+                for (int i = 0; i < historySize; i++) {
+                    float touchX = motionEvent.getHistoricalX(i);
+                    float touchY = motionEvent.getHistoricalY(i);
+
+                    PaintPoint paintPoint = new PaintPoint(touchX, touchY, brushRadius, _brushType, _paint);
+                    _listPaintPoints.add(paintPoint);
+
+                }
+
+                PaintPoint currPaintPoint = new PaintPoint(curTouchX, curTouchY, brushRadius, _brushType, _paint);
+                _listPaintPoints.add(currPaintPoint);
+
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+        }
+
+        invalidate();
         return true;
     }
 
@@ -185,6 +254,39 @@ public class ImpressionistView extends View {
         rect.set(left, top, left + widthActual, top + heightActual);
 
         return rect;
+    }
+
+    private class PaintPoint {
+        private Paint _paint = new Paint();
+        private PointF _point;
+        private float _brushRadius;
+        private BrushType brush;
+
+        public PaintPoint(float x, float y, float brushRadius, BrushType b, Paint paintSrc){
+            // Copy the fields from paintSrc into this paint
+            _paint.set(paintSrc);
+            _point = new PointF(x, y);
+            _brushRadius = brushRadius;
+            brush = b;
+        }
+
+        public Paint getPaint(){
+            return _paint;
+        }
+
+        public float getX(){
+            return _point.x;
+        }
+
+        public float getY(){
+            return _point.y;
+        }
+
+        public float getBrushRadius(){
+            return _brushRadius;
+        }
+
+        public BrushType getBrushType() {return brush;}
     }
 }
 

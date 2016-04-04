@@ -49,7 +49,10 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Download Images"
+                android:text="Download"
+                android:singleLine="true"
+                android:textSize="10sp"
+                android:layout_weight="1.0"
                 android:id="@+id/buttonDownloadImages"
                 android:onClick="onButtonClickDownloadImages"/>
 
@@ -57,13 +60,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Load Image"
+                android:singleLine="true"
+                android:textSize="10sp"
+                android:layout_weight="1.0"
                 android:id="@+id/buttonLoadImage"
                 android:onClick="onButtonClickLoadImage"/>
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Save"
+                android:singleLine="true"
+                android:textSize="10sp"
+                android:layout_weight="1.0"
+                android:id="@+id/buttonSaveImage"
+                android:onClick="onButtonClickLoadImage"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="Brush"
+                android:singleLine="true"
+                android:textSize="10sp"
+                android:layout_weight="1.0"
                 android:id="@+id/buttonBrush"
                 android:onClick="onButtonClickSetBrush"/>
 
@@ -71,6 +90,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Clear"
+                android:singleLine="true"
+                android:textSize="10sp"
+                android:layout_weight="1.0"
                 android:id="@+id/buttonClear"
                 android:onClick="onButtonClickClear"/>
 
