@@ -112,6 +112,10 @@ public class ImpressionistView extends View {
         _brushType = brushType;
     }
 
+    public Bitmap get_offScreenBitmap() {
+        return _offScreenBitmap;
+    }
+
     /**
      * Clears the painting
      */
