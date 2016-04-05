@@ -75,20 +75,16 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
             public void onClick(DialogInterface dialog, int which){
                 //save drawing
                 _impressionistView.setDrawingCacheEnabled(true);
+                Bitmap drawingBitmap = _impressionistView.get_offScreenBitmap();
 
-                String imgSaved = MediaStore.Images.Media.insertImage(
-                        getContentResolver(), _impressionistView.get_offScreenBitmap(),
-                        UUID.randomUUID().toString()+".png", "drawing");
-
-                if(imgSaved!=null){
-                    Toast savedToast = Toast.makeText(getApplicationContext(),
-                            "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
-                    savedToast.show();
-                }
-                else{
-                    Toast unsavedToast = Toast.makeText(getApplicationContext(),
-                            "Oops! Image could not be saved.", Toast.LENGTH_SHORT);
-                    unsavedToast.show();
+                String fName = UUID.randomUUID().toString() + ".png";
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), fName);
+                try {
+                    boolean compressSucceeded = drawingBitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(file));
+                    FileUtils.addImageToGallery(file.getAbsolutePath(), getApplicationContext());
+                    Toast.makeText(getApplicationContext(), "Saved to " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
 
                 _impressionistView.destroyDrawingCache();
