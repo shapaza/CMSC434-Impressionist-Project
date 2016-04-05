@@ -145,16 +145,16 @@ public class ImpressionistView extends View {
 
         _imageViewBitmap = _imageView.getDrawingCache();
 
-        for (PaintPoint p : _listPaintPoints) {
-            float touchX = p.getX();
-            float touchY = p.getY();
-            Paint pointPaint = p.getPaint();
-
-            if (p.getBrushType() == BrushType.Square)
-                canvas.drawRect(touchX, touchY, touchX + p.getBrushRadius(), touchY + p.getBrushRadius(), pointPaint);
-            if (p.getBrushType() == BrushType.Circle)
-                canvas.drawCircle(touchX, touchY, p.getBrushRadius(), pointPaint);
-        }
+//        for (PaintPoint p : _listPaintPoints) {
+//            float touchX = p.getX();
+//            float touchY = p.getY();
+//            Paint pointPaint = p.getPaint();
+//
+//            if (p.getBrushType() == BrushType.Square)
+//                canvas.drawRect(touchX, touchY, touchX + p.getBrushRadius(), touchY + p.getBrushRadius(), pointPaint);
+//            if (p.getBrushType() == BrushType.Circle)
+//                canvas.drawCircle(touchX, touchY, p.getBrushRadius(), pointPaint);
+//        }
     }
 
     @Override
@@ -169,13 +169,11 @@ public class ImpressionistView extends View {
         int curTouchXRounded = (int) curTouchX;
         int curTouchYRounded = (int) curTouchY;
         float brushRadius = _defaultRadius;
-        //Bitmap _imageViewBitmap = _imageView.getDrawingCache();
 
         if (curTouchXRounded < 0)
             curTouchXRounded = 0;
         if (curTouchYRounded < 0)
             curTouchYRounded = 0;
-
         if (curTouchXRounded >= _imageViewBitmap.getWidth())
             curTouchXRounded = _imageViewBitmap.getWidth() - 1;
         if (curTouchYRounded >= _imageViewBitmap.getHeight())
@@ -191,16 +189,27 @@ public class ImpressionistView extends View {
                 _paint.setStrokeWidth(brushRadius);
 
                 for (int i = 0; i < historySize; i++) {
+
                     float touchX = motionEvent.getHistoricalX(i);
                     float touchY = motionEvent.getHistoricalY(i);
 
-                    PaintPoint paintPoint = new PaintPoint(touchX, touchY, brushRadius, _brushType, _paint);
-                    _listPaintPoints.add(paintPoint);
-
+                    if (_brushType == _brushType.Square)
+                        _offScreenCanvas.drawRect(touchX, touchY, touchX + brushRadius, touchY + brushRadius, _paint);
+                    if (_brushType == _brushType.Circle)
+                        _offScreenCanvas.drawCircle(touchX, touchY, brushRadius, _paint);
                 }
 
-                PaintPoint currPaintPoint = new PaintPoint(curTouchX, curTouchY, brushRadius, _brushType, _paint);
-                _listPaintPoints.add(currPaintPoint);
+//                for (int i = 0; i < historySize; i++) {
+//                    float touchX = motionEvent.getHistoricalX(i);
+//                    float touchY = motionEvent.getHistoricalY(i);
+//
+//                    PaintPoint paintPoint = new PaintPoint(touchX, touchY, brushRadius, _brushType, _paint);
+//                    _listPaintPoints.add(paintPoint);
+//
+//                }
+//
+//                PaintPoint currPaintPoint = new PaintPoint(curTouchX, curTouchY, brushRadius, _brushType, _paint);
+//                _listPaintPoints.add(currPaintPoint);
 
                 break;
             case MotionEvent.ACTION_UP:
