@@ -31,6 +31,7 @@ public class ImpressionistView extends View {
     private Bitmap _offScreenBitmap = null;
     private Paint _paint = new Paint();
     private Bitmap _imageViewBitmap;
+    private boolean invertColor = false;
 
     private int _alpha = 150;
     private int _defaultRadius = 25;
@@ -40,8 +41,7 @@ public class ImpressionistView extends View {
     private Paint _paintBorder = new Paint();
     private BrushType _brushType = BrushType.Square;
     private float _minBrushRadius = 5;
-
-    private ArrayList<PaintPoint> _listPaintPoints = new ArrayList<PaintPoint>();
+    //private ArrayList<PaintPoint> _listPaintPoints = new ArrayList<PaintPoint>();
 
     public ImpressionistView(Context context) {
         super(context);
@@ -104,6 +104,17 @@ public class ImpressionistView extends View {
         _imageViewBitmap = _imageView.getDrawingCache();
     }
 
+    public void invertColor() {
+        if (invertColor == true)
+            invertColor = false;
+        else
+            invertColor = true;
+    }
+
+    public boolean getInvertColor() {
+        return invertColor;
+    }
+
     /**
      * Sets the brush type. Feel free to make your own and completely change my BrushType enum
      * @param brushType
@@ -120,7 +131,7 @@ public class ImpressionistView extends View {
      * Clears the painting
      */
     public void clearPainting(){
-        _listPaintPoints.clear();
+        //_listPaintPoints.clear();
 
         //TODO
         if(_offScreenCanvas != null) {
@@ -187,6 +198,22 @@ public class ImpressionistView extends View {
                 int historySize = motionEvent.getHistorySize();
                 _paint.setColor(pixel);
                 _paint.setStrokeWidth(brushRadius);
+
+                // if color inversion is set to true, then get the complimentary colors
+                if (invertColor) {
+                    int alpha = Color.alpha(pixel);
+                    int red = Color.red(pixel);
+                    int blue = Color.blue(pixel);
+                    int green = Color.green(pixel);
+
+                    // find compliments
+                    red = (~red) & 0xff;
+                    blue = (~blue) & 0xff;
+                    green = (~green) & 0xff;
+
+                    int invertedColor = Color.argb(alpha, red, blue, green);
+                    _paint.setColor(invertedColor);
+                }
 
                 for (int i = 0; i < historySize; i++) {
 

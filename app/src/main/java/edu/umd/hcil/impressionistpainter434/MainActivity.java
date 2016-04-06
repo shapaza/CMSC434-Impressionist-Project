@@ -3,6 +3,7 @@ package edu.umd.hcil.impressionistpainter434;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
@@ -128,17 +129,17 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
                 Toast.makeText(this, "Square Brush", Toast.LENGTH_SHORT).show();
                 _impressionistView.setBrushType(BrushType.Square);
                 return true;
-            case R.id.menuLine:
-                Toast.makeText(this, "Line Brush", Toast.LENGTH_SHORT).show();
-                _impressionistView.setBrushType(BrushType.Line);
-                return true;
             case R.id.menuCircleSplatter:
                 Toast.makeText(this, "Circle Splatter Brush", Toast.LENGTH_SHORT).show();
                 _impressionistView.setBrushType(BrushType.CircleSplatter);
                 return true;
-            case R.id.menuLineSplatter:
-                Toast.makeText(this, "Line Splatter Brush", Toast.LENGTH_SHORT).show();
-                _impressionistView.setBrushType(BrushType.LineSplatter);
+            case R.id.menuInvertColor:
+                if (_impressionistView.getInvertColor())
+                    Toast.makeText(this, "Color back to normal", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(this, "Color now inverted", Toast.LENGTH_SHORT).show();
+
+                _impressionistView.invertColor();
                 return true;
         }
         return false;
