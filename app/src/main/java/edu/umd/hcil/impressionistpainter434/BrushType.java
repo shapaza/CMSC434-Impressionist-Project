@@ -7,6 +7,6 @@ public enum BrushType {
     Circle,
     Square,
     Line,
-    CircleSplatter,
+    MotionBrush,
     LineSplatter
 }

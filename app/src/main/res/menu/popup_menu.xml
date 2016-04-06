@@ -8,8 +8,8 @@
     <item android:id="@+id/menuSquare"
         android:title="Square" />
 
-    <item android:id="@+id/menuCircleSplatter"
-        android:title="Circle Splatter" />
+    <item android:id="@+id/menuMotionBrush"
+        android:title="Motion-based Brush" />
 
     <item android:id="@+id/menuInvertColor"
         android:title="Invert Color" />

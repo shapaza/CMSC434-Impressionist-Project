@@ -129,9 +129,9 @@ public class MainActivity extends AppCompatActivity implements OnMenuItemClickLi
                 Toast.makeText(this, "Square Brush", Toast.LENGTH_SHORT).show();
                 _impressionistView.setBrushType(BrushType.Square);
                 return true;
-            case R.id.menuCircleSplatter:
-                Toast.makeText(this, "Circle Splatter Brush", Toast.LENGTH_SHORT).show();
-                _impressionistView.setBrushType(BrushType.CircleSplatter);
+            case R.id.menuMotionBrush:
+                Toast.makeText(this, "Motion-based Brush", Toast.LENGTH_SHORT).show();
+                _impressionistView.setBrushType(BrushType.MotionBrush);
                 return true;
             case R.id.menuInvertColor:
                 if (_impressionistView.getInvertColor())
